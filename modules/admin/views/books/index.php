@@ -29,9 +29,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'author_id',
-            'title',
+            
+            [
+                'attribute' => 'author_id',
+                'value' => function ($data){
+                       return  !empty($data->author->FIO)  ? $data->author->FIO : 'Не указан';
+                  },
+            ],
+
             'year_release',
             'description:ntext',
             //'isbn',
