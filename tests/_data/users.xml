@@ -1,0 +1,14 @@
+<dataset>
+    <table name="user">
+        <colum>username</colum>
+        <colum>email</colum>
+        <row>
+            <value>admin</value>
+            <value>admin@email.com</value>
+        </row>
+        <row>
+            <value>user</value>
+            <value>user@email.com</value>
+        </row>
+    </table>
+</dataset>

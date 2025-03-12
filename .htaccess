@@ -1,0 +1,9 @@
+RewriteEngine on
+RewriteRule ^(.+)?$ /web/$1
+
+Options +FollowSymLinks
+IndexIgnore */*
+
+
+RewriteRule ^assets/(.*)$ /web/assets/$1 [L]
+RewriteRule ^images/(.*)$ /web/images/$1 [L]
