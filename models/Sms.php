@@ -34,17 +34,6 @@ class Sms extends Model
             ),
         )));
 
-
-        echo '<pre>request data --
-        '.print_r( $send, true ).'
-
-        raw response --
-        '.$result.'
-
-        json_decode --
-        '.print_r( json_decode( $result ), true ).'
-
-        </pre>';
        
     }
 
