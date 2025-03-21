@@ -153,12 +153,6 @@ class BooksController extends Controller
                     ->bindValue(':end', $end)
                     ->queryAll();
 
-
-                    echo '<pre>';
-                    print_r($model);
-                    echo '</pre>';
-       // exit();
-
         return $this->render('report', [
             'model' => $model,
         ]);
