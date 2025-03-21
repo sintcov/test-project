@@ -38,6 +38,10 @@ $config = [
             'class' => 'yii\rbac\DbManager',
         ],
 
+        'assetManager' => [
+            'appendTimestamp' => true,
+        ],
+        
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
@@ -77,6 +81,7 @@ $config = [
     ],
     'params' => $params,
 ];
+
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment

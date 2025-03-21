@@ -64,6 +64,21 @@ a.desc:after {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.authors-list{
+    margin-bottom: 16px;
+}
+
+.list-enter-active,
+.list-leave-active {
+    transition: all 1s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translate(100px);
+}
+
 @media(max-width:767px) {
     .nav li > form > button.logout {
         display:block;

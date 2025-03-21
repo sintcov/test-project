@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'author_id',
                 'value' => function ($data){
-                       return  !empty($data->author->FIO)  ? $data->author->FIO : 'Не указан';
+                       return  !empty($data->authors())  ? $data->authors() : 'Не указан';
                   },
             ],
 

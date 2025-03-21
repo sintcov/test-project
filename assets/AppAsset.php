@@ -23,9 +23,14 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
+        'https://unpkg.com/vue@3/dist/vue.global.js',
+        'js/jq-script.js',
+        'js/vue-script.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap5\BootstrapAsset'
     ];
+
+   // public $jsOptions = ['position' => \yii\web\View::POS_HEAD];
 }

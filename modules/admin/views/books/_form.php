@@ -22,7 +22,10 @@ $params = [
         'options' => ['enctype' => 'multipart/form-data'],
     ]); ?>
 
-    <?= $form->field($model, 'author_id')->dropDownList(ArrayHelper::map(Authors::find()->asArray()->all(),'id','FIO'), $params) ?>
+    <div id="authors-form" class="authors-form">
+        <?= $form->field($model, 'author_id[]')->dropDownList(ArrayHelper::map(Authors::find()->asArray()->all(),'id','FIO'), $params) ?>
+    </div>
+    <p class="btn btn-outline-secondary btn-sm" id="add-author">Добавить автора</p>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 

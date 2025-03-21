@@ -46,4 +46,9 @@ class Authors extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getAuthorsBook()
+    {
+        return $this->hasMany(AutorsBook::class, ['author_id' => 'id']);
+    }
+
 }

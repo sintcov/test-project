@@ -5,6 +5,7 @@ namespace app\modules\admin\controllers;
 use app\models\WorkImages;
 use app\models\Sms;
 use app\models\Books;
+use app\models\AutorsBook;
 use app\modules\admin\models\BooksSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -75,30 +76,55 @@ class BooksController extends Controller
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
 
+                $authors = $_POST['Books']["author_id"];
 
                 # Загрузка обложки книги
-                if (!empty($_FILES['upload_image'])){
+                if (!empty($_FILES['upload_image']) && $_FILES['upload_image']['error'] == 0){
 
                     $sizes = ['width' => 400, 'height' => null];
-    
                     $img = new WorkImages();
-    
-                    $info = pathinfo($_FILES['upload_image']['name']);
-                    $new_name = $model->id.'_'.Yii::$app->security->generateRandomString();
-                    $new_name = $new_name.'.'.$info["extension"];
-    
-                    $result_original_image = $img->addImage($new_name,  $_FILES['upload_image']['type'], $_FILES['upload_image']['tmp_name'], 'images', $sizes["width"], $sizes["height"]);
-    
-                    $logo = Books::findOne($model->id);
-                    $logo->photo = $new_name;
-                    $logo->save();
-    
+
+                    try {	
+
+                        $result_original_image = $img->addImage($model->id,  $_FILES['upload_image']['type'], $_FILES['upload_image']['tmp_name'], 'images', $sizes["width"], $sizes["height"]);
+                        
+                        # Сохранения информации об обложки в  модель
+                        $model->saveInfoImg($result_original_image);
+
+                    } catch (\Exception $e) {
+                    
+                        echo $e->getMessage();
+                    
+                    }
+
+                    
                 }
 
-                # СМС рассылка о новой книге.
-                $sms = new Sms();
-                $sms->sendingSms($model->title, $model->author_id);
+                # Сохранение авторов
+                if (count($authors) > 0)
+                {
+                    foreach ($authors as $author)
+                    {
+                        $authorAdd = new AutorsBook();
+                        $authorAdd->author_id = $author;
+                        $authorAdd->book_id = $model->id;
+                        $authorAdd->save();
 
+                        # СМС рассылка о выходе новой книге.
+                        try {	
+
+                            $sms = new Sms();
+                            $sms->sendingSms($model->title, $author);
+                        
+                        } catch (\Exception $e) {
+
+                            echo $e->getMessage();
+
+                        }
+
+                    }
+                }
+                
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
@@ -119,16 +145,24 @@ class BooksController extends Controller
         $start = Yii::$app->request->get('date-start');
         $end = Yii::$app->request->get('date-end');
 
-        $model = Yii::$app->db->createCommand('SELECT b.author_id, COUNT(author_id) as total, b.year_release, a.id, a.FIO FROM books b, authors a WHERE b.author_id = a.id AND year_release BETWEEN :start AND :end GROUP BY author_id ORDER BY COUNT(author_id) DESC LIMIT 10')
-            ->bindValue(':start', $start)
-            ->bindValue(':end', $end)
-            ->queryAll();
+        $model = Yii::$app->db->createCommand('SELECT ab.author_id, COUNT(ab.author_id) as total, b.year_release, a.id, a.FIO 
+            FROM books b, authors a, autors_book ab
+                WHERE ab.author_id = a.id AND b.id = ab.book_id AND year_release BETWEEN :start AND :end GROUP BY ab.author_id 
+                    ORDER BY COUNT(ab.author_id) DESC LIMIT 10')
+                    ->bindValue(':start', $start)
+                    ->bindValue(':end', $end)
+                    ->queryAll();
+
+
+                    echo '<pre>';
+                    print_r($model);
+                    echo '</pre>';
+       // exit();
 
         return $this->render('report', [
             'model' => $model,
         ]);
 
-    
     }
 
     /**
@@ -145,20 +179,16 @@ class BooksController extends Controller
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
 
             # Смена изображения
-            if (!empty($_FILES['upload_image'])){
+            if (!empty($_FILES['upload_image']) && $_FILES['upload_image']['error'] == 0){
 
                 $sizes = ['width' => 400, 'height' => null];
 
                 $img = new WorkImages();
 
-                $info = pathinfo($_FILES['upload_image']['name']);
-                $new_name = $model->id.'_'.Yii::$app->security->generateRandomString();
-                $new_name = $new_name.'.'.$info["extension"];
-
-                $result_original_image = $img->addImage($new_name,  $_FILES['upload_image']['type'], $_FILES['upload_image']['tmp_name'], 'images', $sizes["width"], $sizes["height"]);
+                $result_original_image = $img->addImage($model->id,  $_FILES['upload_image']['type'], $_FILES['upload_image']['tmp_name'], 'images', $sizes["width"], $sizes["height"]);
 
                 $logo = Books::findOne($model->id);
-                $logo->photo = $new_name;
+                $logo->photo = $result_original_image;
                 $logo->save();
 
             }

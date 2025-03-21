@@ -34,6 +34,14 @@ class Sms extends Model
             ),
         )));
 
+        if (!$result) {
+
+            throw new \Exception('Не удалось разослать СМС');
+
+        }
+
+
+
        
     }
 
